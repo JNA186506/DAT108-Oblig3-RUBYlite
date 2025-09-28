@@ -1,0 +1,55 @@
+body {
+    width: 100%;
+    font-family: Helvetica, sans-serif;
+}
+
+.registrering {
+    margin: auto;
+    width: 500px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+input[type="name"],
+input[type="startnummer"],
+input[type="sluttid"] {
+    width: 100%;
+    padding: 10px;
+
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+
+.table-container {
+    margin: auto;
+    width: 500px;
+}
+
+#entries {
+    border-collapse: collapse;
+    border: 1px solid black;
+    letter-spacing: 1px;
+    width: 500px;
+    height: auto;
+}
+ th,
+ td {
+     border: 1px solid black;
+     padding: 5px 5px 2px 2px;
+ }
+
+ #inputfilter {
+     margin: 10px;
+ }
+
+ .hidden {
+     display: none;
+ }

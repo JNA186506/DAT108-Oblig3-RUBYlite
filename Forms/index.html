@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html charset=UTF-8">
+    <meta name="Author" content="_nJohannes">
+    <link rel="shortcut icon" href="#">
+    <script defer src="registrering.js"></script>
+    <title>Registrer deltakelse</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="root">
+    <fieldset class="registrering">
+        <legend>Registrering</legend>
+        <div class="form">
+            <label for="startnummer">Startnummer: </label>
+            <input type="number" id="startnummer" autocomplete="off">
+            <br>
+            <label for="name">Navn: </label>
+            <input type="text" id="name" required name="name" autocomplete="off">
+            <br>
+            <label for="sluttid">Sluttid: </label>
+            <input value="00:00:00" type="time" id="sluttid" required name="sluttid">
+            <br>
+            <button id="btn">Legg til deltaker</button>
+        </div>
+    </fieldset>
+
+    <fieldset class="table-container">
+        <div id="inputfilter">
+            <label for="fra">Fra: </label><input value="00:00:00" type="time" id="fra">
+            <label for="til">Til: </label><input value="00:00:00" type="time" id="til">
+        </div>
+        <legend>Deltakere</legend>
+        <div id="liste">
+            <table id="entries" class="hidden">
+                <thead>
+                <tr>
+                    <th scope="col">Navn </th>
+                    <th scope="col">Startnummer </th>
+                    <th scope="col">Sluttid </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>
