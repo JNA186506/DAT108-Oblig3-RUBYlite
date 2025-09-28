@@ -16,11 +16,11 @@
             <label for="startnummer">Startnummer: </label>
             <input type="number" id="startnummer" autocomplete="off">
             <br>
-            <label for="name">Navn: </label>
-            <input type="text" id="name" required name="name" autocomplete="off">
+            <label for="navn">Navn: </label>
+            <input type="text" id="navn" required name="navn" autocomplete="off">
             <br>
             <label for="sluttid">Sluttid: </label>
-            <input value="00:00:00" type="time" id="sluttid" required name="sluttid">
+            <input type="time" id="sluttid" step="2">
             <br>
             <button id="btn">Legg til deltaker</button>
         </div>
@@ -28,12 +28,12 @@
 
     <fieldset class="table-container">
         <div id="inputfilter">
-            <label for="fra">Fra: </label><input value="00:00:00" type="time" id="fra">
-            <label for="til">Til: </label><input value="00:00:00" type="time" id="til">
+            <label for="fra">Fra: </label><input type="time" id="fra" step="2"/>
+            <label for="til">Til: </label><input type="time" id="til" step="2" />
         </div>
         <legend>Deltakere</legend>
         <div id="liste">
-            <table id="entries" class="hidden">
+            <table id="entries" class="hidden tabell">
                 <thead>
                 <tr>
                     <th scope="col">Navn </th>
