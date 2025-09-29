@@ -18,6 +18,7 @@ class DeltagerManager {
     navn;
     sluttid;
     tdbody;
+    deltagerTabell;
 
     constructor(root) {
         this.root = root;
@@ -25,6 +26,7 @@ class DeltagerManager {
         this.navn = root.querySelector("#navn");
         this.sluttid = root.querySelector("#sluttid");
         this.tdbody = root.querySelector("#entries");
+        this.deltagerTabell = [];
     }
 
     leggTilDeltagerITabell() {
@@ -46,19 +48,27 @@ class DeltagerManager {
             this.tdbody.classList.remove("hidden");
 
             this.navn.value = "";
+            this.deltagerTabell.push(deltager);
+            console.log(this.deltagerTabell.toString());
         }
     }
 
     validateForm() {
-        const startnummerInput = parseInt(this.startnummer.value);
-        const validNavnInput = this.navn.value.test("/^[0-9a-zA-Z]+$/");
+        const doesDeltagerExist = !this.deltagerTabell.some(deltager => deltager.startnummer === this.startnummer.value);
 
-        if (isNaN(startnummerInput) || this.navn.value === "" || validNavnInput) {
-            console.log("Invalid input");
-            alert("Form is not valid, check input and try again");
-            return;
-        }
-        return true;
+        const navnValue = this.navn.value.trim();
+        const startNummerValue = this.startnummer.value.trim();
+
+        const isValidStartnummer = /^\d+$/.test(startNummerValue);
+        const isValidNavn = /^\p{L}+$/u.test(navnValue);
+
+        this.startnummer.classList.toggle("invalidInput", (!isValidStartnummer || !doesDeltagerExist));
+        this.navn.classList.toggle("invalidInput", !isValidNavn);
+
+        const isValid = isValidStartnummer && isValidNavn && doesDeltagerExist;
+        if (!isValid) console.log("Invalid input");
+
+        return isValid;
     }
 }
 

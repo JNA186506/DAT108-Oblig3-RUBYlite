@@ -57,3 +57,7 @@ input[type="sluttid"] {
  .tabell {
      border: 1px solid black;
  }
+
+ .invalidInput {
+     border: 1px solid red;
+ }
