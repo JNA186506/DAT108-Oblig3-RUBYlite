@@ -20,7 +20,7 @@
             <input type="text" id="navn" required name="navn" autocomplete="off">
             <br>
             <label for="sluttid">Sluttid: </label>
-            <input type="time" id="sluttid" step="2">
+            <input type="time" id="sluttid" step="2" min="00:00:01" max="23:59:59">
             <br>
             <button id="btn">Legg til deltaker</button>
         </div>
@@ -28,8 +28,9 @@
 
     <fieldset class="table-container">
         <div id="inputfilter">
-            <label for="fra">Fra: </label><input type="time" id="fra" step="2"/>
-            <label for="til">Til: </label><input type="time" id="til" step="2" />
+            <label for="fra">Fra: </label><input type="time" id="fra" step="2" min="00:00:01" max="23:59:59"/>
+            <br>
+            <label for="til">Til: </label><input type="time" id="til" step="2" min="00:00:01" max="23:59:59"/>
         </div>
         <legend>Deltakere</legend>
         <div id="liste">

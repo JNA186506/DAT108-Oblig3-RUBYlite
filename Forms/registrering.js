@@ -51,7 +51,9 @@ class DeltagerManager {
 
     validateForm() {
         const startnummerInput = parseInt(this.startnummer.value);
-        if (isNaN(startnummerInput) || this.navn.value === "") {
+        const validNavnInput = this.navn.value.test("/^[0-9a-zA-Z]+$/");
+
+        if (isNaN(startnummerInput) || this.navn.value === "" || validNavnInput) {
             console.log("Invalid input");
             alert("Form is not valid, check input and try again");
             return;
