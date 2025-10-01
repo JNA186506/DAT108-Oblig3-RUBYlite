@@ -17,7 +17,7 @@ class DeltagerManager {
     startnummer;
     navn;
     sluttid;
-    tdbody;
+    table;
     deltagerTabell;
 
     constructor(root) {
@@ -25,12 +25,12 @@ class DeltagerManager {
         this.startnummer = root.querySelector("#startnummer");
         this.navn = root.querySelector("#navn");
         this.sluttid = root.querySelector("#sluttid");
-        this.tdbody = root.querySelector("#entries");
+        this.table = document.getElementById("entries");
+        this.tbody = this.table.querySelector("tbody");
         this.deltagerTabell = [];
     }
 
     leggTilDeltagerITabell() {
-
         if(this.validateForm()) {
             const deltager = new Deltager(
                 this.startnummer.value,
@@ -38,19 +38,30 @@ class DeltagerManager {
                 this.sluttid.value
             );
 
+            this.deltagerTabell.push(deltager);
+            this.deltagerTabell.sort((a, b) => a.sluttid.localeCompare(b.sluttid));
+
+            console.log(this.deltagerTabell);
+            this.renderTable();
+        }
+    }
+
+    renderTable() {
+        this.tbody.innerHTML = "";
+        this.deltagerTabell.forEach( ((deltager, i) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-            <td>${deltager.navn}</td>
-            <td>${deltager.startnummer}</td>
-            <td>${deltager.sluttid}</td>
+                <td>${i + 1}</td>
+                <td>${deltager.navn}</td>
+                <td>${deltager.startnummer}</td>
+                <td>${deltager.sluttid}</td>
             `;
-            this.tdbody.appendChild(row);
-            this.tdbody.classList.remove("hidden");
+            this.tbody.appendChild(row)
+        }));
+        this.table.classList.remove("hidden");
 
-            this.navn.value = "";
-            this.deltagerTabell.push(deltager);
-            console.log(this.deltagerTabell.toString());
-        }
+        this.navn.value = "";
+        this.startnummer.focus();
     }
 
     validateForm() {
