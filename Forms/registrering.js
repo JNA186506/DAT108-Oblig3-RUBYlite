@@ -42,13 +42,31 @@ class DeltagerManager {
             this.deltagerTabell.sort((a, b) => a.sluttid.localeCompare(b.sluttid));
 
             console.log(this.deltagerTabell);
-            this.renderTable();
+            this.renderTable(this.deltagerTabell);
         }
     }
 
-    renderTable() {
+    resetTable() {
+            this.tbody.innerHTML = "";
+            this.deltagerTabell.forEach( ((deltager, i) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${i + 1}</td>
+                <td>${deltager.navn}</td>
+                <td>${deltager.startnummer}</td>
+                <td>${deltager.sluttid}</td>
+            `;
+                this.tbody.appendChild(row)
+            }));
+            this.table.classList.remove("hidden");
+
+            this.navn.value = "";
+            this.startnummer.focus();
+    }
+
+    renderTable(tabell) {
         this.tbody.innerHTML = "";
-        this.deltagerTabell.forEach( ((deltager, i) => {
+        tabell.forEach( ((deltager, i) => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${i + 1}</td>
@@ -62,6 +80,16 @@ class DeltagerManager {
 
         this.navn.value = "";
         this.startnummer.focus();
+    }
+
+    finnDeltagere() {
+        const fraTid = document.getElementById("fra").value;
+        const tilTid = document.getElementById("til").value;
+
+        const utvalgTabell = this.deltagerTabell.filter(deltager => deltager.sluttid.localeCompare(fraTid) >= 0
+                && deltager.sluttid.localeCompare(tilTid) <= 0);
+
+        this.renderTable(utvalgTabell);
     }
 
     validateForm() {
@@ -85,8 +113,12 @@ class DeltagerManager {
 
 
 const root = document.getElementById("root");
-const btn = root.querySelector("#btn")
+const btn = root.querySelector("#btn");
+const sortBtn = root.querySelector("#sortBtn");
+const resetBtn = root.querySelector("#resetBtn");
 
 const deltagerManager = new DeltagerManager(root);
 
 btn.addEventListener("click", () => deltagerManager.leggTilDeltagerITabell());
+sortBtn.addEventListener("click", () => deltagerManager.finnDeltagere());
+resetBtn.addEventListener("click", () => deltagerManager.resetTable());
