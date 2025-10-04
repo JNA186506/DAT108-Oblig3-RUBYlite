@@ -129,10 +129,22 @@ class DeltagerManager {
         const wrapper = root.querySelector("#pagination");
         wrapper.innerHTML = "";
 
+        const fragment = document.createDocumentFragment();
+
         for (let page = 1; page <= pages; page++) {
-            const isActive = page === this.state.page ? 'active' : '';
-            wrapper.innerHTML += `<button data-page=${page} class="page btn btn-sm btn-info" ${isActive}>${page}</button>`
+            const button = document.createElement('button');
+            button.setAttribute('data-page', page);
+            button.className = 'page btn btn-sm btn-info';
+            button.textContent = page;
+
+            if (page === this.state.page) {
+                button.classList.add('active');
+            }
+
+            fragment.appendChild(button);
         }
+
+        wrapper.appendChild(fragment);
     }
 
     finnDeltagere() {
@@ -186,10 +198,12 @@ class DeltagerManager {
     lastOppFil(file) {
         if (!file) {
             console.error("Ingen fil valgt");
+            return;
         }
 
         if (!file.name.endsWith('.csv')) {
             alert("Vennligst velg en CSV-fil");
+            return;
         }
 
         const reader = new FileReader();
