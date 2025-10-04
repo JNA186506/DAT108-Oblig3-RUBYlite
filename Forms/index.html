@@ -33,9 +33,9 @@
 
     <fieldset class="table-container">
         <div id="inputfilter">
-            <label for="fra">Fra: </label><input type="time" id="fra" step="2" min="00:00:01" max="23:59:59"/>
+            <label for="fra">Fra: </label><input type="time" id="fra" step="2" min="00:00:01" max="23:59:59" title="Fra tid"/>
             <br>
-            <label for="til">Til: </label><input type="time" id="til" step="2" min="00:00:01" max="23:59:59"/>
+            <label for="til">Til: </label><input type="time" id="til" step="2" min="00:00:01" max="23:59:59" title="Til tid"/>
             <br>
             <button id="sortBtn">Sorter </button>
             <button id="resetBtn">Reset </button>
@@ -55,6 +55,7 @@
 
                 </tbody>
             </table>
+            <div id="pagination"></div>
         </div>
     </fieldset>
 </div>

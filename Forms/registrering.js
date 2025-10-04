@@ -26,6 +26,7 @@ class DeltagerManager {
     sluttid;
     table;
     deltagerTabell;
+    state;
 
     constructor(root) {
         this.root = root;
@@ -34,7 +35,41 @@ class DeltagerManager {
         this.sluttid = root.querySelector("#sluttid");
         this.table = document.getElementById("entries");
         this.tbody = this.table.querySelector("tbody");
+        const pagination = root.querySelector("#pagination");
         this.deltagerTabell = [];
+        this.state = {
+            'querySet': this.deltagerTabell,
+            'page': 1,
+            'rows': 20
+        }
+        if (pagination) {
+            pagination.addEventListener('click',
+                this.handlePageClick.bind(this));
+        }
+    }
+
+    pagination(querySet, currPage, rows) {
+        const trimStart = (currPage - 1) * rows;
+        const trimEnd = trimStart + rows;
+
+        const trimmedData = querySet.slice(trimStart, trimEnd);
+
+        const pages = Math.ceil(querySet.length / rows);
+
+        return {
+            'querySet': trimmedData,
+            'pages': pages
+        }
+    }
+
+    handlePageClick(event) {
+        const clickedElement = event.target;
+
+        if (clickedElement.classList.contains('page')) {
+            const newPage = clickedElement.getAttribute('data-page');
+            this.state.page = parseInt(newPage, 10);
+            this.renderTable();
+        }
     }
 
     leggTilDeltagerITabell() {
@@ -46,33 +81,36 @@ class DeltagerManager {
             );
 
             this.deltagerTabell.push(deltager);
-            this.deltagerTabell.sort((a, b) => a.sluttid.localeCompare(b.sluttid));
-
             console.log(this.deltagerTabell);
-            this.renderTable(this.deltagerTabell);
+            this.sortDeltagere();
+            this.renderTable();
         }
     }
 
     leggTilDeltagerITabellFraCSV(deltager) {
         this.deltagerTabell.push(deltager);
-        this.deltagerTabell.sort((a, b) => a.sluttid.localeCompare(b.sluttid));
-
-        console.log(this.deltagerTabell);
-        this.renderTable(this.deltagerTabell);
     }
 
     resetTable() {
         this.tbody.innerHTML = "";
-        this.renderTable(this.deltagerTabell);
+        this.state.querySet = [...this.deltagerTabell];
+        this.state.page = 1;
+        this.renderTable();
     }
 
-    renderTable(tabell) {
+    renderTable() {
         this.tbody.innerHTML = "";
 
-        tabell.forEach(((deltager, i) => {
+        const data =
+            this.pagination(this.state.querySet, this.state.page, this.state.rows);
+
+        const offset = (this.state.page - 1) * this.state.rows;
+
+        data.querySet.forEach(((deltager, i) => {
                 const row = document.createElement("tr");
+                const actualIndex = offset + i + 1;
                 row.innerHTML = `
-                    <td>${i + 1}</td>
+                    <td>${actualIndex}</td>
                     <td>${deltager.navn}</td>
                     <td>${deltager.startnummer}</td>
                     <td>${deltager.sluttid}</td>
@@ -80,20 +118,51 @@ class DeltagerManager {
                 this.tbody.appendChild(row)
             }));
             this.table.classList.remove("hidden");
+            this.pageButtons(data.pages);
 
             this.navn.value = "";
             this.sluttid.value = "";
             this.startnummer.focus();
     }
 
+    pageButtons(pages) {
+        const wrapper = root.querySelector("#pagination");
+        wrapper.innerHTML = "";
+
+        for (let page = 1; page <= pages; page++) {
+            const isActive = page === this.state.page ? 'active' : '';
+            wrapper.innerHTML += `<button data-page=${page} class="page btn btn-sm btn-info" ${isActive}>${page}</button>`
+        }
+    }
+
     finnDeltagere() {
-        const fraTid = document.getElementById("fra").value;
-        const tilTid = document.getElementById("til").value;
+        const fraTid = document.getElementById("fra");
+        const tilTid = document.getElementById("til");
 
-        const utvalgTabell = this.deltagerTabell.filter(deltager => deltager.sluttid.localeCompare(fraTid) >= 0
-                && deltager.sluttid.localeCompare(tilTid) <= 0);
+        const fraTidValue = document.getElementById("fra").value;
+        const tilTidValue = document.getElementById("til").value;
 
-        this.renderTable(utvalgTabell);
+        if (fraTidValue > tilTidValue) {
+            fraTid.classList.add("invalidInput");
+            tilTid.classList.add("invalidInput");
+            tilTid.setCustomValidity("Fra kan ikke være større enn til");
+            tilTid.reportValidity();
+            return;
+        }
+
+        const utvalgTabell = this.deltagerTabell.filter(deltager => deltager.sluttid.localeCompare(fraTidValue) >= 0
+                && deltager.sluttid.localeCompare(tilTidValue) <= 0);
+
+        fraTid.value = "";
+        tilTid.value = "";
+        fraTid.classList.remove("invalidInput");
+        tilTid.classList.remove("invalidInput");
+        tilTid.setCustomValidity("");
+
+        this.state.querySet = utvalgTabell;
+        this.state.page = 1;
+
+        this.renderTable();
     }
 
     validateForm() {
@@ -112,6 +181,34 @@ class DeltagerManager {
         if (!isValid) console.log("Invalid input");
 
         return isValid;
+    }
+
+    lastOppFil(file) {
+        if (!file) {
+            console.error("Ingen fil valgt");
+        }
+
+        if (!file.name.endsWith('.csv')) {
+            alert("Vennligst velg en CSV-fil");
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            try {
+                this.deltagereFraFil(e.target.result, ',');
+            } catch (error) {
+                console.error("Feil ved lesing av fil:", error);
+                alert("Kunne ikke laste inn filen. Sjekk formatet.");
+            }
+        };
+
+        reader.onerror = () => {
+            console.error("Feil ved lesing av fil");
+            alert("Kunne ikke lese filen");
+        };
+
+        reader.readAsText(file);
     }
 
     deltagereFraFil(stringVal, splitter) {
@@ -139,22 +236,25 @@ class DeltagerManager {
 
         console.log(formedArr);
         formedArr.forEach(deltager => this.leggTilDeltagerITabellFraCSV(deltager));
+
+        this.sortDeltagere();
+        this.renderTable();
+
         return formedArr;
     }
-}
 
+    sortDeltagere() {
+        this.deltagerTabell.sort((a,b) => a.sluttid.localeCompare(b.sluttid));
+        this.state.querySet = this.deltagerTabell;
+    }
+}
 const deltagerManager = new DeltagerManager(root);
 
 lastOpp.addEventListener("click", function(event) {
-    const file = filInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        const csvArray = deltagerManager.deltagereFraFil(e.target.result, ",");
-    }
-    reader.readAsText(file);
-    filInput.value = "";
     event.preventDefault();
+    const file = filInput.files[0];
+    deltagerManager.lastOppFil(file);
+    filInput.value = "";
 })
 
 btn.addEventListener("click", () => deltagerManager.leggTilDeltagerITabell());
